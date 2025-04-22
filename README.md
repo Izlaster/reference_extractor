@@ -47,15 +47,15 @@ poetry run python script.py --pdf /путь/к/файлу.pdf
 [
   {
     "authors": [
-      "Bishop C.M. Pattern Recognition"
+      "Bishop C.M."
     ],
-    "title": "and Machine Learning"
+    "title": "Pattern Recognition and Machine Learning"
   },
   {
     "authors": [
-      "Hastie T., Tibshirani R., Friedman J. The Elements"
+      "Hastie T., Tibshirani R., Friedman J."
     ],
-    "title": "of Statistical Learning"
+    "title": "The Elements of Statistical Learning"
   },
   ...
 ]
