@@ -1,0 +1,19 @@
+[project]
+name = "work"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Izlaster",email = "izmaylovle0@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pdfminer-six (>=20250416,<20250417)",
+    "refextract (>=1.1.4,<2.0.0)",
+    "setuptools (>=79.0.0,<80.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
