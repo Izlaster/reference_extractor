@@ -1,8 +1,14 @@
 import re
 import json
 import argparse
+
+# Для обработки PDF
 from pdfminer.high_level import extract_text
+# Для извлечения ссылок
 from refextract import extract_references_from_string
+
+# Для загрузки удалённых txt-файлов по URL
+import requests
 
 def pdf_to_text(path: str) -> str:
     """
@@ -10,6 +16,19 @@ def pdf_to_text(path: str) -> str:
     Требуется установка: pip install pdfminer.six
     """
     return extract_text(path)
+
+def txt_to_text(path: str) -> str:
+    """
+    Получает текст из локального .txt-файла или по HTTP(S)-ссылке.
+    Требуется установка (для URL): pip install requests
+    """
+    if path.startswith(('http://', 'https://')):
+        resp = requests.get(path)
+        resp.raise_for_status()
+        return resp.text
+    else:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
 
 def parse_references(text: str) -> list[dict]:
     """
@@ -56,23 +75,30 @@ def build_authors_titles(references: list[dict]) -> list[dict]:
 
 def main():
     # Настроим парсер аргументов
-    parser = argparse.ArgumentParser(description="Извлечение ссылок из PDF и формирование JSON.")
-    parser.add_argument('--pdf', required=True, help="Путь к PDF-файлу")
+    parser = argparse.ArgumentParser(
+        description="Извлечение ссылок из PDF или TXT и формирование JSON."
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--pdf', help="Путь к PDF-файлу")
+    group.add_argument('--txt', help="Путь или URL к TXT-файлу")
+    parser.add_argument('--output', '-o', default="refs_authors_titles.json",
+                        help="Имя выходного JSON-файла")
     args = parser.parse_args()
 
-    # Извлечение текста из PDF
-    pdf_path = args.pdf
-    txt = pdf_to_text(pdf_path)
-    refs = parse_references(txt)
+    # Чтение исходного текста
+    if args.pdf:
+        text = pdf_to_text(args.pdf)
+    else:
+        text = txt_to_text(args.txt)
+
+    # Извлечение и обработка ссылок
+    refs = parse_references(text)
     authors_titles = build_authors_titles(refs)
 
-    # Вывод в консоль
-    # print(json.dumps(authors_titles, ensure_ascii=False, indent=2))
-
     # Сохранение в файл
-    with open("refs_authors_titles.json", "w", encoding="utf-8") as f:
+    with open(args.output, "w", encoding="utf-8") as f:
         json.dump(authors_titles, f, ensure_ascii=False, indent=2)
-    print(f"Сохранено: refs_authors_titles.json")
+    print(f"Сохранено: {args.output}")
 
 if __name__ == "__main__":
     main()
