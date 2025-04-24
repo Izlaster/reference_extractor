@@ -124,6 +124,17 @@ def build_from_raw(raw_refs: list[dict]) -> list[dict]:
     return out
 
 
+def deduplicate_references(refs: list[dict]) -> list[dict]:
+    seen = set()
+    unique = []
+    for r in refs:
+        key = (tuple(r['authors']), r['title'].strip())
+        if key not in seen:
+            seen.add(key)
+            unique.append(r)
+    return unique
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Извлечение ссылек из PDF или TXT: точный парсинг авторов и названий."
@@ -141,7 +152,7 @@ def main():
     raw_refs = parse_references(text)
     academic_items = build_from_raw(raw_refs)
 
-    result = list_items + academic_items
+    result = deduplicate_references(list_items + academic_items)
     with open(args.output, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"Сохранено: {args.output} (обработано {len(result)} записей)")
