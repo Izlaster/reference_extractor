@@ -86,11 +86,12 @@ def build_from_raw(raw_refs: list[dict]) -> list[dict]:
         raw = raw_list[0].strip()
         # удаляем нумерацию
         main_part = re.sub(r'^\s*\d+\.\s*', '', raw)
-        # убираем всё после '//' для академических ссылок
-        parts = main_part.split('//', 1)
+        # разбиваем по одиночному или двойному слэшу, но сохраним правую часть для авторов
+        parts = re.split(r'\s*/{1,2}\s*', main_part, maxsplit=1)
         main_part = parts[0].strip()
+        rest_part = parts[1] if len(parts) > 1 else ""
 
-        # извлечение авторов по позиции
+        # извлечение авторов по позиции из основной части
         authors = []
         pos = 0
         while True:
@@ -105,6 +106,12 @@ def build_from_raw(raw_refs: list[dict]) -> list[dict]:
                 pos += comma.end()
             else:
                 break
+
+        # дополнительно извлекаем авторов из правой части после слэша
+        for m in PAT_AUTHOR_BUILD.finditer(rest_part):
+            auth = ' '.join(m.group(0).split())
+            if auth not in authors:
+                authors.append(auth)
 
         # поиск заголовков
         titles = TITLE_QUOTE.findall(main_part)
