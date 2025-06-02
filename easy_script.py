@@ -21,11 +21,11 @@ def extract_sources(text):
     entry_pattern = re.compile(r'^\s*(\d+)\.\s*(.+?)(?=(?:\n\s*\d+\.|\Z))', re.S | re.M)
     entries = entry_pattern.findall(text)
     results = []
-    expected_num = 1
+    # expected_num = 1
 
     # Шаблон авторов: фамилия с возможным дефисом + пробел + инициалы (1-2)
-    author_pattern = r'[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)*\s+[А-Я]\.(?:[А-Я]\.)?'
-    # Полный шаблон списка авторов
+    # author_pattern = r'[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)*\s+[А-Я]\.(?:[А-Я]\.)?'
+    author_pattern = r'[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)*\s+[A-ZА-ЯЁ]\.(?:[A-ZА-ЯЁ]\.)?'
     authors_list_pattern = re.compile(rf'^({author_pattern}(?:,\s*{author_pattern})*)[ ,]')
 
     for num_str, body in entries:
