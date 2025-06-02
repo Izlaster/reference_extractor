@@ -48,7 +48,8 @@ def extract_sources(text):
         rest = entry_text[m_auth.end():].strip()
 
         # Разделяем по маркеру ' // ' или ' / '
-        split = re.split(r'\s//\s|\s/\s', rest, maxsplit=1)
+        # split = re.split(r'\s//\s|\s/\s', rest, maxsplit=1)
+        split = re.split(r'\s*//\s*|\s*/\s*', rest, maxsplit=1)
         title = split[0].strip().rstrip('.')
 
         results.append({
